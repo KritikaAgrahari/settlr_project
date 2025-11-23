@@ -1,3 +1,4 @@
+//Tells Next.js this component will run in the browser (client-side) instead of only on the server. Needed because we use hooks (useState, useForm).
 "use client";
 
 import { useState } from "react";
@@ -35,11 +36,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+//name: required, at least 1 character DESCription: optional
 const groupSchema = z.object({
   name: z.string().min(1, "Group name is required"),
   description: z.string().optional(),
 });
 
+
+//isOpen: controls if the modal is visible
+//onClose: function to close modal
+//onSuccess: callback when group is created
 const CreateGroupModal = ({ isOpen, onClose, onSuccess }) => {
  const [selectedMembers, setSelectedMembers] = useState([]);
 const [searchQuery, setSearchQuery] = useState("");

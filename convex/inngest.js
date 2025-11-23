@@ -1,8 +1,11 @@
+//query declares a read-only server function.
+//v is used to declare/validate argument types
 import { query } from "./_generated/server";
 import { v } from "convex/values";
 
 // 1‑to‑1 debts netted against cases where the user
 // was the payer and against settlements already made.
+//Export a query named getUsersWithOutstandingDebts.handler gets a Convex context ctx with database access (ctx.db).Load all users from the users table.
 export const getUsersWithOutstandingDebts = query({
   handler: async (ctx) => {
     const users = await ctx.db.query("users").collect();
@@ -28,6 +31,7 @@ export const getUsersWithOutstandingDebts = query({
     };
 
     for (const user of users) {
+      //Iterate over every user and compute what they owe to others.
       // Map<counterpartyId, { amount: number, since: number }>
       // +amount => user owes counterparty
       // -amount => counterparty owes user
@@ -36,6 +40,7 @@ export const getUsersWithOutstandingDebts = query({
       /* ── 1) process every 1‑to‑1 expense ─────────────────────────────── */
       for (const exp of expenses) {
         // Case A: somebody else paid, and user appears in splits
+        //Check if the current user is listed in splits and hasn’t already marked that share as paid.If not in splits (or already paid), nothing to do.
         if (exp.paidByUserId !== user._id) {
           const split = exp.splits.find(
             (s) => s.userId === user._id && !s.paid
